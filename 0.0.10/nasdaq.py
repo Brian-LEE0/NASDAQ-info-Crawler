@@ -139,7 +139,7 @@ def stock_info_upd(ticker):
 
 
 
-def judgeval(tickerfull, ticker, key, variance = 2):
+def judgeval(tickerfull, ticker, key, variance = 2,inc_emoji,dec_emoji,tothemoon_emoji):
 	try :
 		global price_std
 		global mes
@@ -190,18 +190,18 @@ def judgeval(tickerfull, ticker, key, variance = 2):
 			#############
 
 			if  price_info[2] >= 20 and price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[💎💎💎💎💎💎💎]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
+				mes[key] = f'[(tothemoon_emoji)*7]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 				if shortsqueezelock[key] == 1 :
-					sendPricetoKAKAOshortAlert(ticker)
+					sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji)
 					shortsqueezelock[key] = 0
 			elif price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[💙💙💙💙]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[(inc_emoji)*4]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 			elif price_info[2] <= price_std[key] - variance:
-				mes[key] = f'[🔻🔻🔻🔻]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[(dec_emoji)*4]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 
@@ -269,9 +269,9 @@ def sendmestoKAKAO(mes):
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
-def sendPricetoKAKAOshortAlert(ticker):
+def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
 	try :
-		mes = f'[💎💎💎💎💎💎💎]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
+		mes = f'[(tothemoon_emoji)*7]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
 		for i in range(5) :
 			pag.click(K_OP_XY_CH)
 			sleep(0.2)
@@ -353,8 +353,8 @@ if __name__ == "__main__":
 		try:
 			current_time = datetime.now()
 			print(current_time)
-			judgeval("amc-entertat-hld","AMC",0, 1.5)
-			judgeval("gamestop-corp","GME",1, 1.5)
+			judgeval("amc-entertat-hld","AMC",0, 1.5,💙,🔻,💎)
+			judgeval("gamestop-corp","GME",1, 1.5,😍,😰,🚀)
 			if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 				sendPricetoKAKAOServerState()
 		except KeyboardInterrupt as kI:
