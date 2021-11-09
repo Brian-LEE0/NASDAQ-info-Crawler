@@ -139,7 +139,7 @@ def stock_info_upd(ticker):
 
 
 
-def judgeval(tickerfull, ticker, key, variance = 2,inc_emoji,dec_emoji,tothemoon_emoji):
+def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_emoji):
 	try :
 		global price_std
 		global mes
