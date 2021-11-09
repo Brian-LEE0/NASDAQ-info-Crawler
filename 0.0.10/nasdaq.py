@@ -190,18 +190,18 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 			#############
 
 			if  price_info[2] >= 20 and price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[(tothemoon_emoji)*7]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
+				mes[key] = f'[{(tothemoon_emoji)*7}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 				if shortsqueezelock[key] == 1 :
 					sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji)
 					shortsqueezelock[key] = 0
 			elif price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[(inc_emoji)*4]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[{(inc_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 			elif price_info[2] <= price_std[key] - variance:
-				mes[key] = f'[(dec_emoji)*4]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[{(dec_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 
@@ -271,7 +271,7 @@ def sendmestoKAKAO(mes):
 
 def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
 	try :
-		mes = f'[(tothemoon_emoji)*7]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
+		mes = f'[{(tothemoon_emoji)*7}]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
 		for i in range(5) :
 			pag.click(K_OP_XY_CH)
 			sleep(0.2)
