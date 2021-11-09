@@ -12,12 +12,13 @@ price_std = [0] * 9
 price_buf1 = [0] * 9
 price_buf2 = [0] * 9
 price_buf3 = [0] * 9
+buf_info = [0]*9
 mes = [0] * 9
 
 ##################
 #####Constant#####
-OPEN_TIME = (22,30)
-CLOSE_TIME = (5,0)
+OPEN_TIME = (9,30)
+CLOSE_TIME = (16,0)
 K_MY_XY_CH = (756,346)
 K_MY_XY_OK = (983,320)
 K_OP_XY_CH = (747,670)
@@ -35,9 +36,7 @@ current_time = 0
 
 pag.FAILSAFE= False
 HEADERS = ({'User-Agent':
-			"Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36\
-			(KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36\
-			Edg/91.0.864.37"})
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"})
 
 class TimeOutException(Exception):
 	pass
@@ -84,8 +83,8 @@ def KrwUsdconv():
 
 def stock_info_upd(ticker):
 	try :
-		URL = "https://kr.investing.com/equities/" + ticker
-	  
+
+		URL = "https://www.investing.com/equities/" + ticker
 		  
 		webpage = requests.get(URL, headers=HEADERS)
 		webpage.raise_for_status()
@@ -98,7 +97,7 @@ def stock_info_upd(ticker):
 		except :
 			state =''
 		
-		if state == '개장전' or state == '폐장후' :
+		if state == 'Pre Market' or state == 'After Hours' :
 			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text)
 			try :
 				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0])
@@ -109,6 +108,7 @@ def stock_info_upd(ticker):
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[3]')[0])
 			except :
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
+		
 		else :
 			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text)
 			
@@ -121,11 +121,9 @@ def stock_info_upd(ticker):
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0])
 			except :
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0])
-			print(variance_per)
 		
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == '개장전' else 2 if state == '폐장후' else 0	
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
 		
-			
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
 		exit()
@@ -136,7 +134,6 @@ def stock_info_upd(ticker):
 		print(f'ERROR crol : {ex}')
 		print(current_time)
 		countdown(1)
-		stock_info_upd(ticker)
 		
 
 
@@ -151,14 +148,11 @@ def judgeval(tickerfull, ticker, key, variance = 2):
 		global price_buf1
 		global price_buf2
 		global price_buf3
+		global buf_info
 		global shortsqueezelock
-		if 1:#current_time.hour >= 4 and current_time.hour < 20 and current_time.weekday() != 5 and current_time.weekday() != 6:
-			price_info = [100,20,30,"10",0]
-
-
-			print(ticker + "'s info : " + str(price_info) + " / Std% : "+ str(price_std[key]))
-
-
+		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
+			price_info = stock_info_upd(tickerfull)
+			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
@@ -166,13 +160,32 @@ def judgeval(tickerfull, ticker, key, variance = 2):
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
+			##close notice
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
-				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
 				price_std[key] = price_info[2]
 				market_close_token[key] = 0
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
+
+
+			#duplicationError judg
+			if price_buf1[key] != price_info[0] and price_buf2[key] != price_info[0] and price_buf3 != price_info[0] :
+				try :
+					price_buf3[key] = price_buf2[key]
+					price_buf2[key] = price_buf1[key]
+					price_buf1[key] = price_info[0]
+				except Exception as ex :
+					print(f'{ex} 발생')
+			else :
+				raise DuplicationError
+
+
+			print(ticker + "'s info : " + str(price_info) + " / Std% : "+ str(price_std[key]))
+
+
+			
 
 			#############
 
@@ -200,14 +213,16 @@ def judgeval(tickerfull, ticker, key, variance = 2):
 				shortsqueezelock = [1]*9
 				price_std = [0]*9
 			print("준비중! 안전벨트 꽉매")
-			sleep(1)
-		countdown(8)
+			countdown(3)
+			return 0
+		buf_info[key] = price_info
+		countdown(3)
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
 		exit()
 	except DuplicationError as Dp:
 		print("Skip Process : {}, {}".format(ticker,price_info[0]))
-		countdown(8)
+		countdown(3)
 	except Exception as ex:
 		print(f'ERROR at judge : {ex}')
 		countdown(5)
@@ -340,7 +355,8 @@ if __name__ == "__main__":
 			print(current_time)
 			judgeval("amc-entertat-hld","AMC",0, 1.5)
 			judgeval("gamestop-corp","GME",1, 1.5)
-			sendPricetoKAKAOServerState()
+			if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
+				sendPricetoKAKAOServerState()
 		except KeyboardInterrupt as kI:
 			print(f'ERROR : {kI}')
 			break
