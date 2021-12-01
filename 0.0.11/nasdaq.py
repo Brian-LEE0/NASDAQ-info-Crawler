@@ -27,6 +27,7 @@ BACK_XY = (234,8)
 #####Constant#####
 ##################
 
+super_token = 1
 market_open_token = [1]*9
 market_close_token = [1]*9
 shortsqueezelock = [1]*9
@@ -315,14 +316,15 @@ def sendPricetoKAKAOerror(er):
 def sendPricetoKAKAOServerState():
 	try :
 		global server_token
-		if (current_time.minute%30) == 0 and server_token == 1 :
+		global super_token
+		if ((current_time.minute%30) == 0 and server_token) or super_token :
 			amc = stock_info_upd("amc-entertat-hld")
-			cvm = stock_info_upd("gamestop-corp")
+			cvm = stock_info_upd("cel-sci-corp")
 			pag.click(K_MY_XY_CH)
 			sleep(0.2)
 			currency = float(KrwUsdconv())
 			won = currency * (amc[0]*94 + cvm[0]*40)
-			pc.copy(f'{str(current_time)}\n amc:{amc[0]}$ gme:{cvm[0]}$\ntotal : {round(won,2)}원\n 환율{round(currency,2)}')
+			pc.copy(f'{str(current_time)}\n amc:{amc[0]}$ cvm:{cvm[0]}$\ntotal : {round(won,2)}원\n 환율{round(currency,2)}')
 			pag.keyDown('ctrl')
 			pag.press('v')
 			pag.keyUp('ctrl')
@@ -336,6 +338,7 @@ def sendPricetoKAKAOServerState():
 			sleep(0.2)
 			pag.click(BACK_XY)
 			server_token = 0
+			super_token = 0
 			countdown(3)
 		elif (current_time.minute%30) == 5 :
 			server_token = 1
@@ -349,6 +352,7 @@ if __name__ == "__main__":
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
 	sendmestoKAKAO(rebootserv)
+	sendPricetoKAKAOServerState()
 	while 1:
 		try:
 			current_time = datetime.now()

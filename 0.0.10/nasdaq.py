@@ -8,6 +8,8 @@ from datetime import datetime
 import pyautogui as pag
 import pyperclip as pc
 
+
+
 price_std = [0] * 9
 price_buf1 = [0] * 9
 price_buf2 = [0] * 9
@@ -139,7 +141,7 @@ def stock_info_upd(ticker):
 
 
 
-def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_emoji):
+def judgeval(tickerfull, ticker, key, variance = 2):
 	try :
 		global price_std
 		global mes
@@ -190,18 +192,18 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 			#############
 
 			if  price_info[2] >= 20 and price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[{(tothemoon_emoji)*7}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
+				mes[key] = f'[💎💎💎💎💎💎💎]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 				if shortsqueezelock[key] == 1 :
-					sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji)
+					sendPricetoKAKAOshortAlert(ticker)
 					shortsqueezelock[key] = 0
 			elif price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[{(inc_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[💙💙💙💙]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 			elif price_info[2] <= price_std[key] - variance:
-				mes[key] = f'[{(dec_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[🔻🔻🔻🔻]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 
@@ -269,9 +271,9 @@ def sendmestoKAKAO(mes):
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
-def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
+def sendPricetoKAKAOshortAlert(ticker):
 	try :
-		mes = f'[{(tothemoon_emoji)*7}]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
+		mes = f'[💎💎💎💎💎💎💎]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
 		for i in range(5) :
 			pag.click(K_OP_XY_CH)
 			sleep(0.2)
@@ -317,12 +319,12 @@ def sendPricetoKAKAOServerState():
 		global server_token
 		if (current_time.minute%30) == 0 and server_token == 1 :
 			amc = stock_info_upd("amc-entertat-hld")
-			gme = stock_info_upd("gamestop-corp")
+			cvm = stock_info_upd("cel-sci-corp")
 			pag.click(K_MY_XY_CH)
 			sleep(0.2)
 			currency = float(KrwUsdconv())
-			won = currency * (amc[0]*90 + gme[0]*8)
-			pc.copy(f'{str(current_time)}\n amc:{amc[0]}$ gme:{gme[0]}$\ntotal : {round(won,2)}원\n 환율{round(currency,2)}')
+			won = currency * (amc[0]*90 + cvm[0]*8)
+			pc.copy(f'{str(current_time)}\n amc:{amc[0]}$ cvm:{cvm[0]}$\ntotal : {round(won,2)}원\n 환율{round(currency,2)}')
 			pag.keyDown('ctrl')
 			pag.press('v')
 			pag.keyUp('ctrl')
@@ -353,8 +355,8 @@ if __name__ == "__main__":
 		try:
 			current_time = datetime.now()
 			print(current_time)
-			judgeval("amc-entertat-hld","AMC",0, 1.5,"💙","🔻","💎")
-			judgeval("gamestop-corp","GME",1, 1.5,"😍","😰","🚀")
+			judgeval("amc-entertat-hld","AMC",0, 1.5)
+			judgeval("gamestop-corp","GME",1, 1.5)
 			if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 				sendPricetoKAKAOServerState()
 		except KeyboardInterrupt as kI:
