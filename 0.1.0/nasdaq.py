@@ -318,8 +318,9 @@ def sendPricetoKAKAOServerState():
 		global server_token
 		global super_token
 		if ((current_time.minute%30) == 0 and server_token) or super_token :
-			stock = [[0]*2 for _ in range(100)]
+			stock = [[0]*3 for _ in range(100)]
 			count = 0
+			won = 0
 			message = f'{str(current_time)}\n'
 			file = open("list.txt","r")
 			if not file : return
@@ -337,8 +338,8 @@ def sendPricetoKAKAOServerState():
 			currency = float(KrwUsdconv())
 			for i in range (count):
 				won += currency * stock[i][1][0] * stock[i][2]
-				message += f'{stock[i][0]}:{stock[i][1][2]}$'
-			message += "\ntotal : {round(won,2)}원\n 환율{round(currency,2)}"
+				message += f'{stock[i][0]}:{stock[i][1][0]}$ '
+			message += f'\ntotal : {round(won,2)}원\n 환율{round(currency,2)}'
 			pc.copy(message)
 			pag.keyDown('ctrl')
 			pag.press('v')
