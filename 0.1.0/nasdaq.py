@@ -188,6 +188,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 			price_info = stock_info_upd(tickerfull)
+			print(price_info)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
