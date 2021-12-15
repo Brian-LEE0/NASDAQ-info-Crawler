@@ -206,6 +206,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
+			print("pass")
 
 
 			#duplicationError judg
@@ -218,7 +219,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 					print(f'{ex} 발생')
 			else :
 				raise DuplicationError
-
+			print("pass")
 
 			print(ticker + "'s info : " + str(price_info) + " / Std% : "+ str(price_std[key]))
 
@@ -242,7 +243,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				mes[key] = f'[{(dec_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
-
+			print("pass")
 			#############
 		else :
 			if (current_time.hour == 23) :
