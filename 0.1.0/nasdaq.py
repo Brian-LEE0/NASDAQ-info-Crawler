@@ -188,7 +188,6 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 			price_info = stock_info_upd(tickerfull)
-			print(price_info)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
@@ -197,7 +196,6 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
-			print("pass")
 			##close notice
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
 				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
@@ -206,7 +204,6 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
-			print("pass")
 
 
 			#duplicationError judg
@@ -219,7 +216,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 					print(f'{ex} 발생')
 			else :
 				raise DuplicationError
-			print("pass")
+
 
 			print(ticker + "'s info : " + str(price_info) + " / Std% : "+ str(price_std[key]))
 
@@ -243,7 +240,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				mes[key] = f'[{(dec_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
-			print("pass")
+
 			#############
 		else :
 			if (current_time.hour == 23) :
