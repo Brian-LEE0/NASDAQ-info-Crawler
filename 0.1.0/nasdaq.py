@@ -138,6 +138,7 @@ def stock_info_upd(ticker):
 		print(current_time)
 		countdown(1)
 
+
 def etf_info_upd(ticker):
 	try :
 		URL = "https://www.investing.com/etfs/" + ticker
@@ -148,41 +149,12 @@ def etf_info_upd(ticker):
 			return -1
 		soup = BeautifulSoup(webpage.content, "html.parser")
 		dom = etree.HTML(str(soup))
-		try :
-			state = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/text()')[0].text
-			print(state)
-		except :
-			state =''
-		
-		if state == 'Pre Market' or state == 'After Hours' :
-			
-			price = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/span')[0].text.replace(',',''))
-			print(price)
-			try :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]/text()[2]')[0].replace(',',''))
-			except :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]')[0].text.replace(',',''))
-			print(variance)	
-			try :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()[3]')[0].replace(',',''))
-			except :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()[2]')[0].replace(',',''))
-			print(variance_per)
-		else :
-			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
-			
-			try :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()[2]')[0].replace(',',''))
-			except :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]')[0].text.replace(',',''))
-			
-			try :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace(',',''))
-			except :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()/text()[2]')[0].replace(',',''))
-		
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
-		
+		price = dom.xpath('//*[@id="last_last"]/text()')[0]
+		variance = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0]
+		variance_per = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%','')
+
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per)
+
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
 		exit()
