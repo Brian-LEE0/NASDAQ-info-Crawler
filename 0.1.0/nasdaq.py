@@ -197,6 +197,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
+			print("pass")
 			##close notice
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
 				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
