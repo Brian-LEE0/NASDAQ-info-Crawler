@@ -1,2 +1,3 @@
-amc amc-entertat-hld 124
-gme gamestop-corp 1
+TSLA tesla-motors 2 0
+LCID churchill-capital-iv 20 0
+NVDA nvidia-corp 3 0

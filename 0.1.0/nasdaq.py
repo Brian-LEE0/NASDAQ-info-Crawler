@@ -15,6 +15,7 @@ price_buf3 = [0] * 9
 buf_info = [0]*9
 mes = [0] * 9
 
+
 ##################
 #####Constant#####
 OPEN_TIME = (9,30)
@@ -82,6 +83,7 @@ def KrwUsdconv():
 		print(f'ERROR at currency : {ex}')
 
 
+
 def stock_info_upd(ticker):
 	try :
 
@@ -99,29 +101,29 @@ def stock_info_upd(ticker):
 			state =''
 		
 		if state == 'Pre Market' or state == 'After Hours' :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text)
+			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text.replace(',',''))
 			try :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0])
+				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0].replace(',',''))
 			except :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]')[0].text)
+				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]')[0].text.replace(',',''))
 				
 			try :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[3]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[3]')[0].replace(',',''))
 			except :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0].replace(',',''))
 		
 		else :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text)
+			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
 			
 			try :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]/text()[2]')[0])
+				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]/text()[2]')[0].replace(',',''))
 			except :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]')[0].text)
+				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]')[0].text.replace(',',''))
 			
 			try :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0].replace(',',''))
 			except :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0].replace(',',''))
 		
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
 		
@@ -135,9 +137,62 @@ def stock_info_upd(ticker):
 		print(f'ERROR crol : {ex}')
 		print(current_time)
 		countdown(1)
+
+def etf_info_upd(ticker):
+	try :
+		URL = "https://www.investing.com/etfs/" + ticker
+		  
+		webpage = requests.get(URL, headers=HEADERS)
+		webpage.raise_for_status()
+		if webpage.status_code != requests.codes.ok :
+			return -1
+		soup = BeautifulSoup(webpage.content, "html.parser")
+		dom = etree.HTML(str(soup))
+		try :
+			state = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/text()')[0].text
+			print(state)
+		except :
+			state =''
 		
-
-
+		if state == 'Pre Market' or state == 'After Hours' :
+			
+			price = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/span')[0].text.replace(',',''))
+			print(price)
+			try :
+				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]/text()[2]')[0].replace(',',''))
+			except :
+				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]')[0].text.replace(',',''))
+			print(variance)	
+			try :
+				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()[3]')[0].replace(',',''))
+			except :
+				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()[2]')[0].replace(',',''))
+			print(variance_per)
+		else :
+			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
+			
+			try :
+				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()[2]')[0].replace(',',''))
+			except :
+				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]')[0].text.replace(',',''))
+			
+			try :
+				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace(',',''))
+			except :
+				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()/text()[2]')[0].replace(',',''))
+		
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
+		
+	except KeyboardInterrupt as kI:
+		print(f'ERROR : {kI}')
+		exit()
+	#except TimeOutException as eT:
+#		print(f'ERROR : {eT}')
+#		stock_info_upd(ticker)
+	except Exception as ex:
+		print(f'ERROR crol : {ex}')
+		print(current_time)
+		countdown(1)
 
 
 def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_emoji):
@@ -320,6 +375,7 @@ def sendPricetoKAKAOServerState():
 		if ((current_time.minute%30) == 0 and server_token) or super_token :
 			stock = [[0]*3 for _ in range(100)]
 			count = 0
+			option = 0
 			won = 0
 			message = f'{str(current_time)}\n'
 			file = open("list.txt","r")
@@ -329,8 +385,11 @@ def sendPricetoKAKAOServerState():
 				if not line : break
 				line = line.split()
 				stock[count][0] = line[0]
-				stock[count][1] = stock_info_upd(line[1])
-				stock[count][2] = (int)(line[2])
+				if (line[3] == '0') :
+					stock[count][1] = stock_info_upd(line[1])
+				elif (line[3] == '1') :
+					stock[count][1] = etf_info_upd(line[1])
+				stock[count][2] = int(line[2])
 				count+=1
 			file.close()
 			pag.click(K_MY_XY_CH)
@@ -364,7 +423,6 @@ def sendPricetoKAKAOServerState():
 
 
 if __name__ == "__main__":
-        
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
 	sendmestoKAKAO(rebootserv)
