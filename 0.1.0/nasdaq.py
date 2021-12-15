@@ -149,9 +149,9 @@ def etf_info_upd(ticker):
 			return -1
 		soup = BeautifulSoup(webpage.content, "html.parser")
 		dom = etree.HTML(str(soup))
-		price = dom.xpath('//*[@id="last_last"]/text()')[0]
-		variance = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0]
-		variance_per = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%','')
+		price = float(dom.xpath('//*[@id="last_last"]/text()')[0])
+		variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
+		variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
 
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per)
 
