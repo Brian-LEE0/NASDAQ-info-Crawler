@@ -196,9 +196,12 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				sendPricetoKAKAO(key)
 				countdown(3)
 				return 0
-			##close notice
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
+				if (not buf_info[key][0]) :
+					market_close_token[key] = 0
+					return 0
 				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
+				print(mes[key])
 				price_std[key] = price_info[2]
 				market_close_token[key] = 0
 				sendPricetoKAKAO(key)
@@ -369,6 +372,7 @@ def sendPricetoKAKAOServerState():
 					stock[count][1] = stock_info_upd(line[1])
 				elif (line[3] == '1') :
 					stock[count][1] = etf_info_upd(line[1])
+				print(stock[count][1])
 				stock[count][2] = int(line[2])
 				count+=1
 			file.close()

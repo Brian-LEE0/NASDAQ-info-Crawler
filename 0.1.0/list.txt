@@ -1,3 +1,4 @@
 TSLA tesla-motors 2 0
 LCID churchill-capital-iv 20 0
 NVDA nvidia-corp 3 0
+FNGU bmo-rex-mcrsctrs-fang-index-3x-lvrg 35 1
