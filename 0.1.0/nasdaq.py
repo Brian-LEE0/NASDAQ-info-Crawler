@@ -101,7 +101,7 @@ def stock_info_upd(ticker):
 			state =''
 		
 		if state == 'Pre Market' or state == 'After Hours' :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text)
+			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text.replace(",",""))
 			try :
 				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0])
 			except :
@@ -113,7 +113,7 @@ def stock_info_upd(ticker):
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
 		
 		else :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text)
+			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(",",""))
 			
 			try :
 				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]/text()[2]')[0])
@@ -154,11 +154,11 @@ def etf_info_upd(ticker):
 		except :
 			state = ""
 		if state == 'PreMarket ' or state == 'AfterHours' :
-			price = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/span/text()')[0])
+			price = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/span/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()')[0].replace('%',''))
 		else :
-			price = float(dom.xpath('//*[@id="last_last"]/text()')[0])
+			price = float(dom.xpath('//*[@id="last_last"]/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
 	
