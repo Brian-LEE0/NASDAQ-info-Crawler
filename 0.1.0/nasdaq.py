@@ -124,7 +124,6 @@ def stock_info_upd(ticker):
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0])
 			except :
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0])
-
 		
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
 		
@@ -160,15 +159,9 @@ def etf_info_upd(ticker):
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()')[0].replace('%',''))
 		else :
 			price = float(dom.xpath('//*[@id="last_last"]/text()')[0])
-			try :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
-			except :
-				variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[1]/div[1]/div[2]/span[2]/text()')[0])
-			try :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
-			except :
-				variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[1]/div[1]/div[2]/span[4]/text()')[0].replace('%',''))
-
+			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
+			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
+	
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'PreMarket' else 2 if state == 'AfterHours' else 0
 
 	except KeyboardInterrupt as kI:
@@ -375,10 +368,13 @@ def sendPricetoKAKAOServerState():
 				if not line : break
 				line = line.split()
 				stock[count][0] = line[0]
-				if (line[3] == '0') :
-					stock[count][1] = stock_info_upd(line[1])
-				elif (line[3] == '1') :
-					stock[count][1] = etf_info_upd(line[1])
+				try :
+					if (line[3] == '0') :
+						stock[count][1] = stock_info_upd(line[1])
+					elif (line[3] == '1') :
+						stock[count][1] = etf_info_upd(line[1])
+				except :
+					stock[count][1] = 0
 				print(stock[count][1])
 				stock[count][2] = int(line[2])
 				count+=1
