@@ -407,7 +407,7 @@ def sendPricetoKAKAOServerState():
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
-def SendMessageMacro(location, back){
+def SendMessageMacro(location, back) :
 	pag.keyDown('ctrl')
 	pag.press('v')
 	pag.keyUp('ctrl')
@@ -419,7 +419,6 @@ def SendMessageMacro(location, back){
 	pag.click(back)
 	server_token = 0
 	super_token = 0
-}
 
 
 if __name__ == "__main__":
