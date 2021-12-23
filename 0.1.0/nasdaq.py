@@ -384,7 +384,7 @@ def sendPricetoKAKAOServerState():
 			currency = float(KrwUsdconv())
 			for i in range (count):
 				won += currency * stock[i][1][0] * stock[i][2]
-				message += f'{stock[i][0]}:{stock[i][1][0]}$ '
+				message += f'{stock[i][0]}:{stock[i][1][0]}$ ({stock[i][1][2]}%)\n'
 			message += f'\ntotal : {round(won,2)}원\n 환율{round(currency,2)}'
 			pc.copy(message)
 			pag.keyDown('ctrl')
@@ -407,6 +407,19 @@ def sendPricetoKAKAOServerState():
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
+def SendMessageMacro(location, back){
+	pag.keyDown('ctrl')
+	pag.press('v')
+	pag.keyUp('ctrl')
+	print(str(current_time) + " OK")
+	for i in range(3) :
+		sleep(0.2)
+		pag.click(location)
+	sleep(0.2)
+	pag.click(back)
+	server_token = 0
+	super_token = 0
+}
 
 
 if __name__ == "__main__":
