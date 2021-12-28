@@ -189,7 +189,10 @@ def yahoo_info_upd(ticker):
 		except :
 			state = ""
 		if state == 'After hours:' or state == 'Pre-Market:' :
-			price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/fin-streamer[2]/text()')[0].replace(",",""))
+			try :
+				price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/fin-streamer[2]/text()')[0].replace(",",""))
+			except :
+				price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[1]/span/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[1]/span/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[2]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
 		else :
