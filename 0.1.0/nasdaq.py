@@ -364,7 +364,7 @@ def sendPricetoKAKAOServerState():
 				try :
 					stock[count][1] = yahoo_info_upd(line[0])
 				except :
-					stock[count][1] = {0,0,0,0,0,0}
+					stock[count][1] = [0,0,0,0,0]
 				print(stock[count][1])
 				stock[count][2] = int(line[2])
 				count+=1
