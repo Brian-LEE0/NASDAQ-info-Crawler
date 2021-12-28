@@ -153,7 +153,7 @@ def etf_info_upd(ticker):
 			state = dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/text()')[0].replace(' ','')
 		except :
 			state = ""
-		if state == 'PreMarket ' or state == 'AfterHours' :
+		if state == 'PreMarket' or state == 'AfterHours' :
 			price = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/span/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[1]/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[3]/div[1]/div[2]/text()')[0].replace('%',''))
@@ -161,6 +161,41 @@ def etf_info_upd(ticker):
 			price = float(dom.xpath('//*[@id="last_last"]/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
+	
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'PreMarket' else 2 if state == 'AfterHours' else 0
+
+	except KeyboardInterrupt as kI:
+		print(f'ERROR : {kI}')
+		exit()
+	#except TimeOutException as eT:
+#		print(f'ERROR : {eT}')
+#		stock_info_upd(ticker)
+	except Exception as ex:
+		print(f'ERROR crol : {ex}')
+		print(current_time)
+
+def yahoo_info_upd(ticker):
+	try :
+		URL = "https://finance.yahoo.com/quote/" + ticker
+		  
+		webpage = requests.get(URL, headers=HEADERS)
+		webpage.raise_for_status()
+		if webpage.status_code != requests.codes.ok :
+			return -1
+		soup = BeautifulSoup(webpage.content, "html.parser")
+		dom = etree.HTML(str(soup))
+		try :
+			state = dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[2]/span/text()')[0]
+		except :
+			state = ""
+		if state == 'PreMarket' or state == 'Pre-Market:' :
+			price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/fin-streamer[2]/text()')[0].replace(",",""))
+			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[1]/span/text()')[0])
+			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[2]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
+		else :
+			price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[1]/text()')[0].replace(",",""))
+			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[2]/span/text()')[0])
+			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[3]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
 	
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'PreMarket' else 2 if state == 'AfterHours' else 0
 
@@ -271,19 +306,8 @@ def sendPricetoKAKAO(key):
 		pag.click(K_OP_XY_CH)
 		sleep(0.2)
 		pc.copy(mes[key])
-		sleep(0.2)
-		pag.keyDown('ctrl')
-		pag.press('v')
-		pag.keyUp('ctrl')
 		print(mes[key] + " OK")
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(BACK_XY)
+		SendMessageMacro(K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')\
 
@@ -293,18 +317,8 @@ def sendmestoKAKAO(mes):
 		sleep(0.2)
 		pc.copy(mes)
 		sleep(0.2)
-		pag.keyDown('ctrl')
-		pag.press('v')
-		pag.keyUp('ctrl')
 		print(mes + " OK")
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(K_OP_XY_OK)
-		sleep(0.2)
-		pag.click(BACK_XY)
+		SendMessageMacro(K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
@@ -316,18 +330,8 @@ def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
 			sleep(0.2)
 			pc.copy(mes)
 			sleep(0.2)
-			pag.keyDown('ctrl')
-			pag.press('v')
-			pag.keyUp('ctrl')
 			print(mes + " OK")
-			sleep(0.2)
-			pag.click(K_OP_XY_OK)
-			sleep(0.2)
-			pag.click(K_OP_XY_OK)
-			sleep(0.2)
-			pag.click(K_OP_XY_OK)
-			sleep(0.2)
-			pag.click(BACK_XY)
+			SendMessageMacro(K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
@@ -336,18 +340,7 @@ def sendPricetoKAKAOerror(er):
 		pag.click(K_MY_XY_CH)
 		sleep(0.2)
 		pc.copy(er)
-		pag.keyDown('ctrl')
-		pag.press('v')
-		pag.keyUp('ctrl')
-		sleep(0.2)
-		print(er + " OK")
-		pag.click(K_MY_XY_OK)
-		sleep(0.2)
-		pag.click(K_MY_XY_OK)
-		sleep(0.2)
-		pag.click(K_MY_XY_OK)
-		sleep(0.2)
-		pag.click(BACK_XY)
+		SendMessageMacro(K_MY_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
@@ -387,18 +380,7 @@ def sendPricetoKAKAOServerState():
 				message += f'{stock[i][0]}:{stock[i][1][0]}$ ({stock[i][1][2]}%)\n'
 			message += f'\ntotal : {round(won,2)}원\n 환율{round(currency,2)}'
 			pc.copy(message)
-			pag.keyDown('ctrl')
-			pag.press('v')
-			pag.keyUp('ctrl')
-			print(str(current_time) + " OK")
-			sleep(0.2)
-			pag.click(K_MY_XY_OK)
-			sleep(0.2)
-			pag.click(K_MY_XY_OK)
-			sleep(0.2)
-			pag.click(K_MY_XY_OK)
-			sleep(0.2)
-			pag.click(BACK_XY)
+			SendMessageMacro(K_MY_XY_OK, BACK_XY)
 			server_token = 0
 			super_token = 0
 			countdown(3)
@@ -408,23 +390,25 @@ def sendPricetoKAKAOServerState():
 		print(f'ERROR : {ex}')
 
 def SendMessageMacro(location, back) :
-	pag.keyDown('ctrl')
-	pag.press('v')
-	pag.keyUp('ctrl')
-	print(str(current_time) + " OK")
-	for i in range(3) :
+	try :
+		pag.keyDown('ctrl')
+		pag.press('v')
+		pag.keyUp('ctrl')
+		print(str(current_time) + " OK")
+		for i in range(3) :
+			sleep(0.2)
+			pag.click(location)
 		sleep(0.2)
-		pag.click(location)
-	sleep(0.2)
-	pag.click(back)
-	server_token = 0
-	super_token = 0
+		pag.click(back)
+	except Exception as ex:
+		print(f'ERROR : {ex}')
 
 
 if __name__ == "__main__":
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
 	sendmestoKAKAO(rebootserv)
+	print(yahoo_info_upd(FUNG))
 	sendPricetoKAKAOServerState()
 	while 1:
 		try:
