@@ -306,22 +306,15 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 
 def sendPricetoKAKAO(key):
 	try :
-		pag.click(K_OP_XY_CH)
-		sleep(0.2)
-		pc.copy(mes[key])
 		print(mes[key] + " OK")
-		SendMessageMacro(K_OP_XY_OK, BACK_XY)
+		SendMessageMacro(K_OP_XY_CH,mes[key],K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')\
 
 def sendmestoKAKAO(mes):
 	try :
-		pag.click(K_OP_XY_CH)
-		sleep(0.2)
-		pc.copy(mes)
-		sleep(0.2)
 		print(mes + " OK")
-		SendMessageMacro(K_OP_XY_OK, BACK_XY)
+		SendMessageMacro(K_OP_XY_CH,mes,K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
@@ -329,21 +322,14 @@ def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
 	try :
 		mes = f'[{(tothemoon_emoji)*7}]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
 		for i in range(5) :
-			pag.click(K_OP_XY_CH)
-			sleep(0.2)
-			pc.copy(mes)
-			sleep(0.2)
 			print(mes + " OK")
-			SendMessageMacro(K_OP_XY_OK, BACK_XY)
+			SendMessageMacro(K_OP_XY_CH,mes,K_OP_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
 def sendPricetoKAKAOerror(er):
 	try :
-		pag.click(K_MY_XY_CH)
-		sleep(0.2)
-		pc.copy(er)
-		SendMessageMacro(K_MY_XY_OK, BACK_XY)
+		SendMessageMacro(K_MY_XY_CH,er,K_MY_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
@@ -372,15 +358,12 @@ def sendPricetoKAKAOServerState():
 				stock[count][2] = int(line[1])
 				count+=1
 			file.close()
-			pag.click(K_MY_XY_CH)
-			sleep(0.2)
 			currency = float(KrwUsdconv())
 			for i in range (count):
 				won += currency * stock[i][1][0] * stock[i][2]
 				message += f'{stock[i][0]}:{stock[i][1][0]}$ ({stock[i][1][2]}%)\n'
 			message += f'\ntotal : {round(won,2)}원\n 환율{round(currency,2)}'
-			pc.copy(message)
-			SendMessageMacro(K_MY_XY_OK, BACK_XY)
+			SendMessageMacro(K_MY_XY_CH,message,K_MY_XY_OK, BACK_XY)
 			server_token = 0
 			super_token = 0
 			countdown(3)
@@ -389,8 +372,11 @@ def sendPricetoKAKAOServerState():
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
-def SendMessageMacro(location, back) :
+def SendMessageMacro(chat,message,location, back) :
 	try :
+		pag.click(chat)
+		sleep(0.2)
+		pc.copy(message)
 		pag.keyDown('ctrl')
 		pag.press('v')
 		pag.keyUp('ctrl')
