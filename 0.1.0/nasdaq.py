@@ -405,7 +405,7 @@ def SendMessageMacro(location, back) :
 
 
 if __name__ == "__main__":
-	print(yahoo_info_upd(FUNG))
+	print(yahoo_info_upd("FUNG"))
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
 	sendmestoKAKAO(rebootserv)
