@@ -188,7 +188,6 @@ def yahoo_info_upd(ticker):
 			state = dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[2]/span/text()')[0]
 		except :
 			state = ""
-		print(state)
 		if state == 'After hours:' or state == 'Pre-Market:' :
 			price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/fin-streamer[2]/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[2]/span[1]/fin-streamer[1]/span/text()')[0])
@@ -197,7 +196,6 @@ def yahoo_info_upd(ticker):
 			price = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[1]/text()')[0].replace(",",""))
 			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[2]/span/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[3]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
-		print(price)
 
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre-Market:' else 2 if state == 'After hours:' else 0
 
@@ -404,7 +402,6 @@ def SendMessageMacro(location, back) :
 
 
 if __name__ == "__main__":
-	print(yahoo_info_upd("FNGU"))
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
 	sendmestoKAKAO(rebootserv)
