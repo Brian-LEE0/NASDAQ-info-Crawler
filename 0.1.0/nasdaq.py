@@ -369,7 +369,7 @@ def sendPricetoKAKAOServerState():
 				except :
 					stock[count][1] = [0,0,0,0,0]
 				print(stock[count][1])
-				stock[count][2] = int(line[2])
+				stock[count][2] = int(line[1])
 				count+=1
 			file.close()
 			pag.click(K_MY_XY_CH)
