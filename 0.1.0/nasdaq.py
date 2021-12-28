@@ -364,12 +364,9 @@ def sendPricetoKAKAOServerState():
 				line = line.split()
 				stock[count][0] = line[0]
 				try :
-					if (line[3] == '0') :
-						stock[count][1] = stock_info_upd(line[1])
-					elif (line[3] == '1') :
-						stock[count][1] = etf_info_upd(line[1])
+					stock[count][1] = yahoo_info_upd(line[0])
 				except :
-					stock[count][1] = 0
+					stock[count][1] = {0,0,0,0,0,0}
 				print(stock[count][1])
 				stock[count][2] = int(line[2])
 				count+=1
