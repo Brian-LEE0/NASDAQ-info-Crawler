@@ -1,7 +1,9 @@
-TSLA tesla-motors 1 0
-LCID churchill-capital-iv 15 0
-NVDA nvidia-corp 2 0
-FNGU bmo-rex-mcrsctrs-fang-index-3x-lvrg 7 1
-RIVN rivian-automotive 3 0
-JNJ johnson-johnson 0 0
-PFE pfizer 0 0
+TSLA 1
+LCID 15
+NVDA 2
+FNGU 7
+RIVN 3
+JNJ 0
+PFE 0
+AMC 0
+GME 0
