@@ -76,11 +76,15 @@ def KrwUsdconv():
 			return -1
 		soup = BeautifulSoup(webpage.content, "html.parser")
 		dom = etree.HTML(str(soup))
-		price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
+		try :
+			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
+		except :
+			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
 		return price
 		
 	except Exception as ex:
 		print(f'ERROR at currency : {ex}')
+		return 1180
 
 
 
