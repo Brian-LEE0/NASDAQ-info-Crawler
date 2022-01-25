@@ -79,6 +79,7 @@ def KrwUsdconv():
 		dom = etree.HTML(str(soup))
 		try :
 			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
+			//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span
 		except :
 			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
 		return price
@@ -89,7 +90,7 @@ def KrwUsdconv():
 
 
 
-def stock_info_upd(ticker):
+def _stock_info_upd(ticker):
 	try :
 
 		URL = "https://www.investing.com/equities/" + ticker
@@ -179,7 +180,7 @@ def etf_info_upd(ticker):
 		print(f'ERROR crol : {ex}')
 		print(current_time)
 
-def yahoo_info_upd(ticker):
+def stock_info_upd(ticker):
 	try :
 		URL = "https://finance.yahoo.com/quote/" + ticker
 		  
