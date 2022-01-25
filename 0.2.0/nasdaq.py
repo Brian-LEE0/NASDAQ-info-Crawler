@@ -79,7 +79,6 @@ def KrwUsdconv():
 		dom = etree.HTML(str(soup))
 		try :
 			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
-			//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span
 		except :
 			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
 		return price
@@ -362,7 +361,7 @@ def sendPricetoKAKAOServerState():
 				line = line.split()
 				stock[count][0] = line[0]
 				try :
-					stock[count][1] = yahoo_info_upd(line[0])
+					stock[count][1] = stock_info_upd(line[0])
 				except :
 					stock[count][1] = [0,0,0,0,0]
 				print(stock[count][1])
