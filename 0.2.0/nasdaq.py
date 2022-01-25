@@ -80,7 +80,7 @@ def KrwUsdconv():
 		try :
 			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
 		except :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
+			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
 		return price
 		
 	except Exception as ex:
