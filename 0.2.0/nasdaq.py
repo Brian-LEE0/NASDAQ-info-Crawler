@@ -231,7 +231,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 			price_info = stock_info_upd(ticker)
-			print(price_info)
+			print("a")
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
@@ -241,17 +241,20 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				countdown(3)
 				return 0
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
-				if (not buf_info[key][0]) :
+				try :
+					mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
+					print(mes[key])
+					price_std[key] = price_info[2]
+					market_close_token[key] = 0
+					sendPricetoKAKAO(key)
+					countdown(3)
+					return 0
+				except :
 					market_close_token[key] = 0
 					return 0
-				mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
-				print(mes[key])
-				price_std[key] = price_info[2]
-				market_close_token[key] = 0
-				sendPricetoKAKAO(key)
-				countdown(3)
-				return 0
+				
 
+			print("b")
 
 			#duplicationError judg
 			if price_buf1[key] != price_info[0] and price_buf2[key] != price_info[0] and price_buf3 != price_info[0] :
