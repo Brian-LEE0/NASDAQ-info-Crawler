@@ -230,7 +230,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global buf_info
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
-			price_info = stock_info_upd(tickerfull)
+			price_info = stock_info_upd(ticker)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
@@ -376,9 +376,9 @@ def sendPricetoKAKAOServerState():
 			open_chatroom(SVSTATE_ROOMNAME)
 			kakao_sendtext(SVSTATE_ROOMNAME, message)
 			server_token = 0
-			super_token = 0
+			super_token 	= 0
 			countdown(3)
-		elif (current_time.minute%30) == 5 :
+		elif (current_time.minute%30) 	== 5 :
 			server_token = 1
 	except Exception as ex:
 		print(f'ERROR : {ex}')
