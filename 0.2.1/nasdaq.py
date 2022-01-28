@@ -100,6 +100,8 @@ def stock_info_upd(ticker):
 		except :
 			state = ""
 
+		servtime = web.text.split("datetime=")[1].split(">")[1].split("<")[0]
+
 		if state == 'Pre Market' or state == 'After Hours' :
 			price = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-last\">")[2].split("</span>")[0].strip().replace(",","")).group())
 			variance = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-change\">")[2].split("</span>")[0].strip().replace(",","")).group())
@@ -112,7 +114,7 @@ def stock_info_upd(ticker):
 			variance_per = float(re.search("([+-]?\d+\.\d+)",web.text.split("data-test=\"instrument-price-change-percent\">")[1].split("</span>")[0].strip().replace(",","")).group())
 			
 
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0, servtime
 		
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
@@ -188,7 +190,7 @@ def yahoo_info_upd(ticker):
 			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[2]/span/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[3]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
 
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre-Market:' else 2 if state == 'After hours:' else 0
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre-Market:' else 2 if state == 'After hours:' else 0, 
 
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
@@ -212,11 +214,11 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global price_buf3
 		global buf_info
 		global shortsqueezelock
-		if 1 :#current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
+		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 			price_info = stock_info_upd(tickerfull)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
-				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[장 시작] ({price_info[5][0:4]})\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				market_open_token[key] = 0
 				sendPricetoKAKAO(key)
@@ -224,7 +226,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				return 0
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
 				try :
-					mes[key] = f'[장 종료]\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
+					mes[key] = f'[장 종료] ({price_info[5][0:4]})\n{ticker} 주가!\n<{str(buf_info[key][0])}$, {buf_info[key][3]}>'
 					print(mes[key])
 					price_std[key] = price_info[2]
 					market_close_token[key] = 0
@@ -256,18 +258,18 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 			#############
 
 			if  price_info[2] >= 20 and price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[{(tothemoon_emoji)*7}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
+				mes[key] = f'[{(tothemoon_emoji)*7}] ({price_info[5][0:4]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 				if shortsqueezelock[key] == 1 :
 					sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji)
 					shortsqueezelock[key] = 0
 			elif price_info[2] >= (price_std[key] + variance):
-				mes[key] = f'[{(inc_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[{(inc_emoji)*4}] ({price_info[5][0:4]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 			elif price_info[2] <= price_std[key] - variance:
-				mes[key] = f'[{(dec_emoji)*4}]\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
+				mes[key] = f'[{(dec_emoji)*4}] ({price_info[5][0:4]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				sendPricetoKAKAO(key)
 
