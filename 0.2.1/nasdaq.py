@@ -15,8 +15,8 @@ price_buf3 = [0] * 9
 buf_info = [0]*9
 mes = [0] * 9
 
-OPCHAT_ROOMNAME = "아이엠그라운드방"
-SVSTATE_ROOMNAME = "이인영"
+OPCHAT_ROOMNAME = ""#"아이엠그라운드방"
+SVSTATE_ROOMNAME = ""#"이인영"
 
 
 ##################
@@ -95,7 +95,11 @@ def stock_info_upd(ticker):
 	try :
 		URL = "https://www.investing.com/equities/" + ticker
 		web = requests.get(URL, headers=HEADERS)
-		state = web.text.split("<div class=\"closed-market_status")[1].split(">")[1].split("<")[0].strip()
+		try :
+			state = web.text.split("<div class=\"closed-market_status")[1].split(">")[1].split("<")[0].strip()
+		except :
+			state = ""
+
 		if state == 'Pre Market' or state == 'After Hours' :
 			price = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-last\">")[2].split("</span>")[0].strip().replace(",","")).group())
 			variance = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-change\">")[2].split("</span>")[0].strip().replace(",","")).group())
@@ -208,7 +212,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global price_buf3
 		global buf_info
 		global shortsqueezelock
-		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
+		if 1 :#current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 			price_info = stock_info_upd(tickerfull)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
