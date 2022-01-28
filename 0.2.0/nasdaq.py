@@ -101,20 +101,20 @@ def stock_info_upd(ticker):
 		soup = BeautifulSoup(webpage.content, "html.parser")
 		dom = etree.HTML(str(soup))
 		try :
-			state = dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[1]')[0].text
+			state = dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[1]')[0].text
 		except :
 			state =''
 		if state == 'Pre Market' or state == 'After Hours' :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text.replace(",",""))
+
+			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text.replace(",",""))
 			try :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0])
+				variance = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]/text()[2]')[0])
 			except :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]')[0].text)
-				
+				variance = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[1]')[0].text)
 			try :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[3]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[3]')[0])
 			except :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
 		
 		else :
 			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(",",""))
@@ -377,7 +377,7 @@ def sendPricetoKAKAOServerState():
 			open_chatroom(SVSTATE_ROOMNAME)
 			kakao_sendtext(SVSTATE_ROOMNAME, message)
 			server_token = 0
-			super_token 	= 0
+			super_token = 0
 			countdown(3)
 		elif (current_time.minute%30) 	== 5 :
 			server_token = 1
