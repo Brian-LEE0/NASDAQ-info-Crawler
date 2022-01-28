@@ -96,7 +96,6 @@ def stock_info_upd(ticker):
 		URL = "https://www.investing.com/equities/" + ticker
 		web = requests.get(URL, headers=HEADERS)
 		state = web.text.split("<div class=\"closed-market_status")[1].split(">")[1].split("<")[0].strip()
-		print(state)
 		if state == 'Pre Market' or state == 'After Hours' :
 			price = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-last\">")[2].split("</span>")[0].strip().replace(",","")).group())
 			variance = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-change\">")[2].split("</span>")[0].strip().replace(",","")).group())
@@ -320,7 +319,6 @@ def sendPricetoKAKAOerror(er):
 	try :
 		open_chatroom(SVSTATE_ROOMNAME)
 		kakao_sendtext(SVSTATE_ROOMNAME, er)
-		SendMessageMacro(K_MY_XY_CH,er,K_MY_XY_OK, BACK_XY)
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
