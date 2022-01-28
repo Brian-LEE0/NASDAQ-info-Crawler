@@ -15,8 +15,8 @@ price_buf3 = [0] * 9
 buf_info = [0]*9
 mes = [0] * 9
 
-OPCHAT_ROOMNAME = ""#"아이엠그라운드방"
-SVSTATE_ROOMNAME = ""#"이인영"
+OPCHAT_ROOMNAME = "아이엠그라운드방"
+SVSTATE_ROOMNAME = "이인영"
 
 
 ##################
