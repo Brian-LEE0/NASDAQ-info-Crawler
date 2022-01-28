@@ -89,7 +89,7 @@ def KrwUsdconv():
 
 
 
-def _stock_info_upd(ticker):
+def stock_info_upd(ticker):
 	try :
 
 		URL = "https://www.investing.com/equities/" + ticker
@@ -104,7 +104,6 @@ def _stock_info_upd(ticker):
 			state = dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[1]')[0].text
 		except :
 			state =''
-		
 		if state == 'Pre Market' or state == 'After Hours' :
 			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/span')[0].text.replace(",",""))
 			try :
@@ -118,18 +117,19 @@ def _stock_info_upd(ticker):
 				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[3]/div[2]/div[2]/span[2]/text()[2]')[0])
 		
 		else :
-			price = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(",",""))
+			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(",",""))
 			
 			try :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]/text()[2]')[0])
+				variance = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]/text()[2]')[0])
 			except :
-				variance = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]')[0].text)
+				variance = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[1]')[0].text)
 			
 			try :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0])
+				variance_per = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[3]')[0])
 			except :
-				variance_per = float(dom.xpath('//*[@id="__next"]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0])
-		
+				variance_per = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/div[2]/span[2]/text()[2]')[0])
+			
+
 		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre Market' else 2 if state == 'After Hours' else 0
 		
 	except KeyboardInterrupt as kI:
@@ -179,7 +179,7 @@ def etf_info_upd(ticker):
 		print(f'ERROR crol : {ex}')
 		print(current_time)
 
-def stock_info_upd(ticker):
+def yahoo_info_upd(ticker):
 	try :
 		URL = "https://finance.yahoo.com/quote/" + ticker
 		  
@@ -230,7 +230,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global buf_info
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
-			price_info = stock_info_upd(ticker)
+			price_info = stock_info_upd(tickerfull)
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작]\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
@@ -362,7 +362,7 @@ def sendPricetoKAKAOServerState():
 				line = line.split()
 				stock[count][0] = line[0]
 				try :
-					stock[count][1] = stock_info_upd(line[0])
+					stock[count][1] = yahoo_info_upd(line[0])
 				except :
 					stock[count][1] = [0,0,0,0,0]
 				print(stock[count][1])
