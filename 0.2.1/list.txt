@@ -1,2 +1,3 @@
-AMC 138
+AMC 100
 GME 0
+BRK-B 5
