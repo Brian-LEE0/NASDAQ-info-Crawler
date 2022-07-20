@@ -368,7 +368,7 @@ def sendPricetoKAKAOServerState():
 if __name__ == "__main__":
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
-	sendMestoKAKAO(rebootserv)
+	sendMestoKAKAO(SVSTATE_ROOMNAME,rebootserv)
 	sendPricetoKAKAOServerState()
 	while 1:
 		try:
