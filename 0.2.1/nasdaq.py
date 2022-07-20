@@ -72,22 +72,15 @@ def KrwUsdconv():
 	try :
 		URL = "https://kr.investing.com/currencies/usd-krw"
 		  
-		webpage = requests.get(URL, headers=HEADERS)
-		webpage.raise_for_status()
+		web = requests.get(URL, headers=HEADERS)
 		
-		if webpage.status_code != requests.codes.ok :
-			return -1
-		soup = BeautifulSoup(webpage.content, "html.parser")
-		dom = etree.HTML(str(soup))
-		try :
-			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
-		except :
-			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
+		price = float(web.text.split("data-test=\"instrument-price-last\">")[1].split("</span>")[0].strip().replace(",",""))
+		print(price)
 		return price
 		
 	except Exception as ex:
 		print(f'ERROR at currency : {ex}')
-		return 1180
+		return 1300
 
 
 
