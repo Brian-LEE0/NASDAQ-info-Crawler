@@ -146,7 +146,7 @@ def etf_info_upd(ticker):
 			variance = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[2]/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quotes_summary_current_data"]/div[1]/div[2]/div[1]/span[4]/text()')[0].replace('%',''))
 	
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'PreMarket' else 2 if state == 'AfterHours' else 0
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'PreMarket' else 2 if state == 'AfterHours' else 0, "00:00" 
 
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
@@ -368,7 +368,7 @@ def sendPricetoKAKAOServerState():
 if __name__ == "__main__":
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
-	sendMestoKAKAO(rebootserv)
+	sendMestoKAKAO(SVSTATE_ROOMNAME,rebootserv)
 	sendPricetoKAKAOServerState()
 	while 1:
 		try:
