@@ -184,7 +184,7 @@ def yahoo_info_upd(ticker):
 			variance = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[2]/span/text()')[0])
 			variance_per = float(dom.xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div[1]/fin-streamer[3]/span/text()')[0].replace('%','').replace('(','').replace(')',''))
 
-		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre-Market:' else 2 if state == 'After hours:' else 0, 
+		return price, variance, variance_per, '%+.2f, (%+.2f%%)' % (variance,variance_per), 1 if state == 'Pre-Market:' else 2 if state == 'After hours:' else 0, "00:00" 
 
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
@@ -278,16 +278,16 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 				shortsqueezelock = [1]*9
 				price_std = [0]*9
 			print("준비중! 안전벨트 꽉매")
-			countdown(3)
+			countdown(1)
 			return 0
 		buf_info[key] = price_info
-		countdown(3)
+		countdown(1)
 	except KeyboardInterrupt as kI:
 		print(f'ERROR : {kI}')
 		exit()
 	except DuplicationError as Dp:
 		print("Skip Process : {}, {}".format(ticker,price_info[0]))
-		countdown(3)
+		countdown(1)
 	except Exception as ex:
 		print(f'ERROR at judge : {ex}')
 		countdown(5)
