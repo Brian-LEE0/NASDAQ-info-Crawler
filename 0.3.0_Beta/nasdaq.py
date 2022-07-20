@@ -15,7 +15,6 @@ price_buf3 = [0] * 9
 buf_info = [0]*9
 mes = [0] * 9
 
-OPCHAT_ROOMNAME = "아이엠그라운드방"
 SVSTATE_ROOMNAME = "이인영"
 
 
@@ -23,11 +22,15 @@ SVSTATE_ROOMNAME = "이인영"
 #####Constant#####
 OPEN_TIME = (9,30)
 CLOSE_TIME = (16,0)
+K_MY_XY_CH = (756,346)
+K_MY_XY_OK = (983,320)
+K_OP_XY_CH = (747,670)
+K_OP_XY_OK = (983,644)
+BACK_XY = (234,8)
 #####Constant#####
 ##################
 
 super_token = 1
-holiday_token = 0
 market_open_token = [1]*9
 market_close_token = [1]*9
 shortsqueezelock = [1]*9
@@ -68,22 +71,15 @@ def KrwUsdconv():
 	try :
 		URL = "https://kr.investing.com/currencies/usd-krw"
 		  
-		webpage = requests.get(URL, headers=HEADERS)
-		webpage.raise_for_status()
+		web = requests.get(URL, headers=HEADERS)
 		
-		if webpage.status_code != requests.codes.ok :
-			return -1
-		soup = BeautifulSoup(webpage.content, "html.parser")
-		dom = etree.HTML(str(soup))
-		try :
-			price = float(dom.xpath('//*[@id="last_last"]')[0].text.replace(',',''))
-		except :
-			price = float(dom.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span')[0].text.replace(',',''))
+		price = float(web.text.split("data-test=\"instrument-price-last\">")[1].split("</span>")[0].strip().replace(",",""))
+		print(price)
 		return price
 		
 	except Exception as ex:
 		print(f'ERROR at currency : {ex}')
-		return 1180
+		return 1300
 
 
 
@@ -125,32 +121,6 @@ def stock_info_upd(ticker):
 		print(current_time)
 		countdown(1)
 
-
-def market_holiday() :
-	try :
-		URL = "https://www.investing.com/holiday-calendar/" + ticker
-		web = requests.get(URL, headers=HEADERS)
-		
-		web.text.split("id=\"holidayCalendarData\">")[1]
-		
-		servtime = (("Pre" if state == "Pre Market" else "Aft") + web.text.split("<time")[2].split(">")[1].split("</time")[0])[:8]
-		price = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-last\">")[2].split("</span>")[0].strip().replace(",","")).group())
-		variance = float(re.search("[+-]?\d+\.\d+",web.text.split("data-test=\"instrument-price-change\">")[2].split("</span>")[0].strip().replace(",","")).group())
-		variance_per = float(re.search("([+-]?\d+\.\d+)",web.text.split("data-test=\"instrument-price-change-percent\">")[2].split("</span>")[0].strip().replace(",","")).group())
-			
-
-		return 0
-		
-	except KeyboardInterrupt as kI:
-		print(f'ERROR : {kI}')
-		exit()
-	#except TimeOutException as eT:
-#		print(f'ERROR : {eT}')
-#		stock_info_upd(ticker)
-	except Exception as ex:
-		print(f'ERROR crol : {ex}')
-		print(current_time)
-		countdown(1)
 
 def etf_info_upd(ticker):
 	try :
@@ -227,7 +197,7 @@ def yahoo_info_upd(ticker):
 		print(current_time)
 
 
-def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_emoji):
+def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_emoji, OPCHAT_ROOMNAME ,source_site = "investing"):
 	try :
 		global price_std
 		global mes
@@ -239,13 +209,16 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		global buf_info
 		global shortsqueezelock
 		if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
-			price_info = stock_info_upd(tickerfull)
+			if source_site == "investing" : price_info = stock_info_upd(tickerfull)
+			elif source_site == "yahoo" : price_info = yahoo_info_upd(tickerfull)
+			else : return -1
+
 			##open notice
 			if current_time.hour == OPEN_TIME[0] and current_time.minute >= OPEN_TIME[1] and price_info[4] == 0 and market_open_token[key] == 1 :
 				mes[key] = f'[장 시작] ({price_info[5]})\n{ticker} 주가!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
 				market_open_token[key] = 0
-				sendPricetoKAKAO(key)
+				sendPricetoKAKAO(OPCHAT_ROOMNAME, key)
 				countdown(3)
 				return 0
 			if current_time.hour == CLOSE_TIME[0] and current_time.minute >= CLOSE_TIME[1] and price_info[4] == 2 and market_close_token[key] == 1  :
@@ -254,7 +227,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 					print(mes[key])
 					price_std[key] = price_info[2]
 					market_close_token[key] = 0
-					sendPricetoKAKAO(key)
+					sendPricetoKAKAO(OPCHAT_ROOMNAME, key)
 					countdown(3)
 					return 0
 				except :
@@ -284,18 +257,18 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 			if  price_info[2] >= 20 and price_info[2] >= (price_std[key] + variance):
 				mes[key] = f'[{(tothemoon_emoji)*7}] ({price_info[5]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>\n숏스퀴즈 예감!!!!!!!'
 				price_std[key] = price_info[2]
-				sendPricetoKAKAO(key)
+				sendPricetoKAKAO(OPCHAT_ROOMNAME, key)
 				if shortsqueezelock[key] == 1 :
-					sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji)
+					sendPricetoKAKAOshortAlert(OPCHAT_ROOMNAME, ticker,tothemoon_emoji)
 					shortsqueezelock[key] = 0
 			elif price_info[2] >= (price_std[key] + variance):
 				mes[key] = f'[{(inc_emoji)*4}] ({price_info[5]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
-				sendPricetoKAKAO(key)
-			elif price_info[2] <= (price_std[key] - variance):
+				sendPricetoKAKAO(OPCHAT_ROOMNAME, key)
+			elif price_info[2] <= price_std[key] - variance:
 				mes[key] = f'[{(dec_emoji)*4}] ({price_info[5]})\n{ticker} {"프리장 " if price_info[4] == 1 else "애프터장 " if price_info[4] == 2 else ""}주가변동!\n<{str(price_info[0])}$, {price_info[3]}>'
 				price_std[key] = price_info[2]
-				sendPricetoKAKAO(key)
+				sendPricetoKAKAO(OPCHAT_ROOMNAME, key)
 
 			#############
 		else :
@@ -319,7 +292,7 @@ def judgeval(tickerfull, ticker, key, variance, inc_emoji, dec_emoji, tothemoon_
 		print(f'ERROR at judge : {ex}')
 		countdown(5)
 
-def sendPricetoKAKAO(key):
+def sendPricetoKAKAO(OPCHAT_ROOMNAME,key):
 	try :
 		print(mes[key] + " OK")
 		open_chatroom(OPCHAT_ROOMNAME)
@@ -327,7 +300,7 @@ def sendPricetoKAKAO(key):
 	except Exception as ex:
 		print(f'ERROR : {ex}')\
 
-def sendmestoKAKAO(message):
+def sendMestoKAKAO(OPCHAT_ROOMNAME,message):
 	try :
 		print(message + " OK")
 		open_chatroom(OPCHAT_ROOMNAME)
@@ -335,7 +308,7 @@ def sendmestoKAKAO(message):
 	except Exception as ex:
 		print(f'ERROR : {ex}')
 
-def sendPricetoKAKAOshortAlert(ticker,tothemoon_emoji):
+def sendPricetoKAKAOshortAlert(OPCHAT_ROOMNAME,ticker,tothemoon_emoji):
 	try :
 		mes = f'[{(tothemoon_emoji)*7}]\n{ticker}주가 20% 상승!!!!!!\n유심히 관찰하세요'
 		open_chatroom(OPCHAT_ROOMNAME)
@@ -395,14 +368,15 @@ def sendPricetoKAKAOServerState():
 if __name__ == "__main__":
 	current_time = datetime.now()
 	rebootserv = "서버 재가동\n" + str(current_time)
-	sendmestoKAKAO(rebootserv)
+	sendMestoKAKAO(rebootserv)
 	sendPricetoKAKAOServerState()
 	while 1:
 		try:
 			current_time = datetime.now()
 			print(current_time)
-			judgeval("amc-entertat-hld","AMC", 0, 1.5,"💙","🔻","💎")
-			judgeval("gamestop-corp","GME", 1, 1.5,"💚","🔥","🚀")
+			judgeval("amc-entertat-hld","AMC", 0, 1.5,"💙","🔻","💎", "아이엠그라운드방")
+			judgeval("gamestop-corp","GME", 1, 1.5,"💚","🔥","🚀", "아이엠그라운드방")
+			judgeval("SQQQ","SQQQ", 2, 1.5,"💛","💩","🔔", "이인영", "yahoo")
 			if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 				sendPricetoKAKAOServerState()
 		except KeyboardInterrupt as kI:
