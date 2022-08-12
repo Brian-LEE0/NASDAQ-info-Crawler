@@ -376,7 +376,7 @@ if __name__ == "__main__":
 			print(current_time)
 			judgeval("amc-entertat-hld","AMC", 0, 1.5,"💙","🔻","💎", "아이엠그라운드방")
 			judgeval("gamestop-corp","GME", 1, 1.5,"💚","🔥","🚀", "아이엠그라운드방")
-			judgeval("SQQQ","SQQQ", 2, 1.5,"💛","💩","🔔", "이인영", "yahoo")
+			judgeval("SQQQ","SQQQ", 2, 0.5,"💛","💩","🔔", "이인영", "yahoo")
 			if current_time.hour >= 4 and current_time.hour < 21 and current_time.weekday() != 5 and current_time.weekday() != 6:
 				sendPricetoKAKAOServerState()
 		except KeyboardInterrupt as kI:
